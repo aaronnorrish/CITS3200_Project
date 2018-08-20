@@ -4,9 +4,9 @@ import pandas as pd
 from sys import argv
 
 # Scrapes the publishing frequency of all journals listed on the SSCI or A&HCI
-#   master list webpage and returns this information as a dictionary. Note that
-#   if a given journal does not have its publishing frequency listed, it is
-#   assigned a frequency value of "Not Listed" in the returned dictionary.
+# master list webpage and returns this information as a dictionary. Note that
+# if a given journal does not have its publishing frequency listed, it is
+# assigned a frequency value of "Not Listed" in the returned dictionary.
 #   @param url the URL to the first webpage of the SSCI or A&HCI master page
 #   @return journals_dictionary, a dictionary containing all the journals from
 #       the master list website where key = ISSN, value = (journal_name, frequency)
@@ -90,9 +90,9 @@ def write_frequencies(journals_dictionary, read_file, write_file):
 if __name__ == '__main__':
     if(len(argv) == 1):
         ssci_journals = scrape_frequencies("http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=SS&mode=print&Page=1")
-        write_frequencies(ssci_journals, "publist_ssci copy.xlsx", "ssci_frequencies.xlsx")
+        write_frequencies(ssci_journals, "publist_ssci.xlsx", "ssci_frequencies.xlsx")
         ahci_journals = scrape_frequencies("http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=H&mode=print&Page=1")
-        write_frequencies(ahci_journals, "publist_ahci copy.xlsx", "ahci_frequencies.xlsx")
+        write_frequencies(ahci_journals, "publist_ahci.xlsx", "ahci_frequencies.xlsx")
     elif(len(argv) == 7):
         ssci_journals = scrape_frequencies(argv[1])
         write_frequencies(ssci_journals, argv[2], argv[3])
