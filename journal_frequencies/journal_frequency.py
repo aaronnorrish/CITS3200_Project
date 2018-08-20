@@ -3,6 +3,10 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from sys import argv
 
+#
+#   @param url the URL to the first webpage of the SSCI or A&HCI master page
+#   @return journals_dictionary, a dictionary containing all the journals from
+#       the master list website where key = ISSN, value = (journal_name, frequency)
 def scrape_frequencies(url):
     source = requests.get(url)
     soup = BeautifulSoup(source.content, 'lxml')
@@ -11,7 +15,6 @@ def scrape_frequencies(url):
     # or stop execution if 0 journals are scraped on an iteration
     total_journals = int(''.join(filter(str.isdigit, soup.p.text)))
     # print(total_journals) # for testing
-
 
     frequencies, ISSNs, journals = [], [], []
     page = 1
