@@ -105,3 +105,10 @@ venv.bak/
 
 # DS_Store
 .DS_Store
+
+# journal_publishing_frequency files
+ahci_frequencies.xlsx
+ssci_frequencies.xlsx
+ahci_analysis.py
+ssci_analysis.py
+compare.py
