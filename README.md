@@ -16,15 +16,16 @@ This method requires that the SSCI and A&HCI master list Excel files are stored 
 python3 journal_frequency.py <ssci_url> <read_ssci_journals.xlsx> <write_ssci_journals.xlsx> <ahci_url> <read_ahci_journals.xlsx> <write_ahci_journals.xlsx>
 ```
 
-This method requires the user to pass the URL to the first webpage of the [SSCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=SS&mode=print&Page=1) and [A&HCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=H&mode=print&Page=1), as well as the paths to the Excel files:   
+This method requires the user to pass the URL to the first webpage of the [SSCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=SS&mode=print&Page=1) and [A&HCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=H&mode=print&Page=1), as well as the paths to the Excel (.xlsx) files:   
   * containing the SSCI and A&HCI Master Lists (two separate files)
-    * the Excel (.xlsx) master list files must contain a header with the following (or similarly titled) fields:
+    * the Excel master list files must contain a header with the following (or similarly titled) fields:
         * Journal Title
         * Publisher
         * ISSN
         * E-ISSN
         * Country
         * Language
+
       in that order
   * which the user would like the updated data to be written to (also two separate files)
 
