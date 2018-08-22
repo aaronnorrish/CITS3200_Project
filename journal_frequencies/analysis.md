@@ -24,6 +24,7 @@ On the website, there are a total of 3346 SSCI journals of which only 3332 have 
   * Road & Transport Research 1037-5783 ARRB GROUP LTD - not on website
   * SMITH COLLEGE STUDIES IN SOCIAL WORK 0037-7317 ROUTLEDGE JOURNALS, TAYLOR & FRANCIS LTD - not on website
   * VOLTA REVIEW 0042-8639 ALEXANDER GRAHAM BELL ASSOC FOR THE DEAF - not on website
+
 Upon further analysis, it was determined that 7 of the 23 journals are actually listed on the website (with a frequency listed) however the program is not recognising these matches as the ISSNs listed in the master list are different to those on the website.
 
 
@@ -42,6 +43,7 @@ On the website, there are a total of 1816 A&HCI journals of which all have a pub
   * SOUTHERN LITERARY JOURNAL 0038-4291 UNIV NORTH CAROLINA PRESS - not on website
   * Studia Canonica 0039-310X SAINT PAUL UNIV - ISSN not matching, listed as 2295-3019 on website
   * TEXTE-REVUE DE CRITIQUE ET DE THEORIE LITTERAIRE 0715-8920 EDITIONS TRINTEXTE - not on website
+
 Upon further analysis, it was determined that 5 of the 13 journals are actually listed on the website (with a frequency listed) however the program is not recognising these matches as the ISSNs listed in the master list are different to those on the website.
 
 
