@@ -1,6 +1,6 @@
 # CITS3200_Project
 
-[Sprint 1](https://docs.google.com/document/d/1tTihT0tXBC_Wv4KGTl56_YIdyBtyK2or0R0NVLBpva8/edit?usp=sharing)
+[Google Drive](https://drive.google.com/open?id=1IIcVWmXnNDJ_qXzNHUh7GD5lRdM1zqzB)
 
 ## Usage
 ### journal_frequency.py
