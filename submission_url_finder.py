@@ -1,10 +1,11 @@
+# This program takes the xlsx/csv masterlist and updates it to include the submission guidelines URL
+
+
 #Import modules
 #pandas
 #numpy
 #beautifulsoup4
 #etc
-
-# https://docs.google.com/document/d/170enUYwhoX5xjHld9fs92MUjpOHgRbCG6riMfFhiIG0/edit
 
 
 def open_csv(csv):
