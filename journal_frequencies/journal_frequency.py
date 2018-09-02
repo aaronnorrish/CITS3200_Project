@@ -4,12 +4,13 @@ import pandas as pd
 from sys import argv
 
 # Scrapes the publishing frequency of all journals listed on the SSCI or A&HCI
-# master list webpage and returns this information as a dictionary. Note that
+# master list webpage and returns this information as a list of lists. Note that
 # if a given journal does not have its publishing frequency listed, it is
-# assigned a frequency value of "Not Listed" in the returned dictionary.
+# assigned a frequency value of "Not Listed" in the returned data structure.
 #   @param url the URL to the first webpage of the SSCI or A&HCI master page
-#   @return journals_dictionary, a dictionary containing all the journals from
-#       the master list website where key = ISSN, value = (journal_name, frequency)
+#   @return journals_list, a list of lists containing all the journals from
+#       the master list website where each element is of the form:
+#           [ISSN, journal_name, frequency]
 def scrape_frequencies(url):
     source = requests.get(url)
     soup = BeautifulSoup(source.content, 'lxml')
@@ -57,12 +58,12 @@ def scrape_frequencies(url):
     # print(len(journals), len(frequencies), len(ISSNs))
     # print(len(set(journals)))
 
-    # make dictionary out of the three lists with key = ISSN, value = (journal_name, frequency)
-    journals_dictionary = dict(zip(ISSNs, zip(journals, frequencies)))
-
-    # print(journals_dictionary)
-    # print(len(journals_dictionary)) # for some reason this is missing one entry for SSCI, duplicate ISSN??
-    return journals_dictionary
+    # make list of lists out of the three lists with each list = [ISSN, journal_name, frequency]
+    journals_list = []
+    for i in range(len(ISSNs)):
+        journals_list.append([ISSNs[i], journals[i], frequencies[i]])
+    # print(journals_list)
+    return journals_list
 
 # Reads all the journals from the .xlsx SSCI or A&HCI master list and matches
 # them to the journals scraped from the respective master list webpage in order
@@ -70,13 +71,13 @@ def scrape_frequencies(url):
 # file. Note that if a journal from the .xlsx list does not match a journal from
 # the website, or the journal does not have a frequency listed on the website,
 # then the journal is assigned a frequency value of "Not Listed".
-#   @param journals_dictionary a dictionary containing all the journals from
-#       the master list website where key = ISSN, value = (journal_name,
-#       frequency)
+#   @return journals_list, a list of lists containing all the journals from
+#       the master list website where each element is of the form:
+#           [ISSN, journal_name, frequency]
 #   @param read_file the SSCI or A&HCI .xlsx master list to be read from
 #   @param write_file the file to which the master list along with journal
 #       publishing frequencies should be written to
-def write_frequencies(journals_dictionary, read_file, write_file):
+def write_frequencies(journals_list, read_file, write_file):
     # read xlsx file into a list so the publishing frequencies can be added and
     # later written to another xlsx file
     sheet = pd.read_excel(read_file, header=None)
@@ -88,17 +89,17 @@ def write_frequencies(journals_dictionary, read_file, write_file):
 
     # loop through each journal from the master list
     for row in l:
-        # attempt to match the ISSN to one from the master list website
-        if row[2] in journals_dictionary:
-            # n += 1
-            if journals_dictionary[row[2]][1] != "Not Listed":
-                row.append(journals_dictionary[row[2]][1])
-            else:
-                row.append("Not Listed")
-            # print(journals_dictionary[row[2]][0], row[0], journals_dictionary[row[2]][0].lower() == row[0].lower())
-        else:
+        found = False
+        for journal in journals_list: # could change to iterate over size and delete element once found
+            if row[2] == journal[0] or journal[1].lower().find(row[0].lower()) != -1:
+                if journal[2] != "Not Listed":
+                    row.append(journal[2])
+                else:
+                    row.append("Not Listed")
+                found = True
+                break
+        if not found:
             row.append("Not Listed")
-            # print(row[2] in missing)
 
     # create a pandas dataframe from the existing excel file with the journal
     # publishing frequencies added to it
