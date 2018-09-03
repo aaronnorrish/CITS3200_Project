@@ -91,7 +91,7 @@ def write_frequencies(journals_list, read_file, write_file):
     for row in l:
         found = False
         for journal in journals_list: # could change to iterate over size and delete element once found
-            if row[2] == journal[0] or journal[1].lower().find(row[0].lower()) != -1:
+            if row[2] == journal[0] or journal[1].lower().find(row[0].lower()) != -1 or row[0].lower().find(journal[1].lower()) != -1:
                 if journal[2] != "Not Listed":
                     row.append(journal[2])
                 else:
