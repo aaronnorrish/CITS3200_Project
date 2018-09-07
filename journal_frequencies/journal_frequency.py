@@ -88,19 +88,32 @@ def write_frequencies(journals_list, read_file, write_file):
     # n = 0
 
     # loop through each journal from the master list
+    # a,m = 0,0
     for row in l:
         found = False
-        for journal in journals_list: # could change to iterate over size and delete element once found
-            if row[2] == journal[0] or journal[1].lower().find(row[0].lower()) != -1 or row[0].lower().find(journal[1].lower()) != -1:
-                if journal[2] != "Not Listed":
-                    row.append(journal[2])
-                else:
-                    row.append("Not Listed")
+        # for journal in journals_list: # could change to iterate over size and delete element once found
+        #     if row[2] == journal[0]:
+        #         print(row[2], journal[0])
+        #         m += 1
+        # print(len(journals_list))
+        for i in range(len(journals_list)):
+            if row[2] == journals_list[i][0]:
+                # print(row[2], journals_list[i][0])
+                row.append(journals_list[i][2])
+                m += 1
+                del journals_list[i]
+                found = True
+                break
+            elif(journals_list[i][1].lower() == row[0].lower()):
+                row.append(journals_list[i][2])
+                # print(journals_list[i][1] + "       " + row[0])
+                a += 1
                 found = True
                 break
         if not found:
             row.append("Not Listed")
 
+    # print(a, m)
     # create a pandas dataframe from the existing excel file with the journal
     # publishing frequencies added to it
     df = pd.DataFrame.from_records(l, columns=headers)
