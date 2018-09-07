@@ -15,54 +15,40 @@ def scrape_frequencies(url):
     source = requests.get(url)
     soup = BeautifulSoup(source.content, 'lxml')
 
-    # could tally up scraped journals and stop execution after this amount has been reached
-    # or stop execution if 0 journals are scraped on an iteration
     total_journals = int(''.join(filter(str.isdigit, soup.p.text)))
-    # print(total_journals) # for testing
 
     frequencies, ISSNs, journals = [], [], []
     page = 1
-    missing = [] # for testing, can be removed later
 
     while(len(journals) < total_journals):
         if(page != 1): # prevents requesting the first page again
             source = requests.get(url)
             soup = BeautifulSoup(source.content, 'lxml')
+
         # find all instances of journal publishing frequency and ISSN containers
         frequency_and_ISSN = re.findall(r'</dt>\n(.+?)<', str(soup.dl))
+
         # find the journal publishing frequency and ISSN
         for journal in frequency_and_ISSN:
             info = journal.lstrip(" ").split(" ")
-            # print(info)
-            # sometimes frequency not listed, what to do if ISSN not listed???
             if len(info) == 3:
                 frequencies.append(info[0])
                 ISSNs.append(info[2])
-            elif len(info) == 2 and info[0].find("ISSN") != -1: # assuming we don't have "ISSN: <blank>", could be other reasons why info is len 2
-                frequencies.append("Not Listed") # 14 have not listed
-                missing.append(info[1])
+            elif len(info) == 2 and info[0].find("ISSN") != -1:
+                frequencies.append("Not Listed")
                 ISSNs.append(info[1])
-                # could just not add to lists, depends whether this is useful information - probably not
-        # print(len(frequencies), len(ISSNs)) # for testing
 
         # find the journal name
         for dt_tag in soup.find_all('dt'):
             journals.append(dt_tag.string[dt_tag.string.find(" ")+1:])
-        # print(len(journals))
 
         page += 1
         url = url[:-1] + str(page)
-
-    # following print statements are for testing
-    # print(missing)
-    # print(len(journals), len(frequencies), len(ISSNs))
-    # print(len(set(journals)))
 
     # make list of lists out of the three lists with each list = [ISSN, journal_name, frequency]
     journals_list = []
     for i in range(len(ISSNs)):
         journals_list.append([ISSNs[i], journals[i], frequencies[i]])
-    # print(journals_list)
     return journals_list
 
 # Reads all the journals from the .xlsx SSCI or A&HCI master list and matches
@@ -85,47 +71,33 @@ def write_frequencies(journals_list, read_file, write_file):
     headers = l.pop(0)
     headers.append("Frequency")
 
-    # n = 0
-
     # loop through each journal from the master list
-    # a,m = 0,0
     for row in l:
         found = False
-        # for journal in journals_list: # could change to iterate over size and delete element once found
-        #     if row[2] == journal[0]:
-        #         print(row[2], journal[0])
-        #         m += 1
-        # print(len(journals_list))
+        # iterate through each journal remaining in journals_list
         for i in range(len(journals_list)):
+            # attempt to match on ISSN
             if row[2] == journals_list[i][0]:
-                # print(row[2], journals_list[i][0])
                 row.append(journals_list[i][2])
-                m += 1
                 del journals_list[i]
                 found = True
                 break
+            # attempt to match on journal name
             elif(journals_list[i][1].lower() == row[0].lower()):
                 row.append(journals_list[i][2])
-                # print(journals_list[i][1] + "       " + row[0])
-                a += 1
+                del journals_list[i]
                 found = True
                 break
+        # if no match was found, then the journal must not exist on the website
         if not found:
             row.append("Not Listed")
 
-    # print(a, m)
     # create a pandas dataframe from the existing excel file with the journal
     # publishing frequencies added to it
     df = pd.DataFrame.from_records(l, columns=headers)
 
-    # print(df)
-
     # write dataframe to excel file
     df.to_excel(write_file, index=False)
-
-    # print(n) #3201/3250 by ISSN, string
-    # print(len(l))
-    # print(l)
 
 # This program may be run with or without command line arguments. If run without
 #  command line arguments, the SSCI and A&HCI Excel master lists must be stored
