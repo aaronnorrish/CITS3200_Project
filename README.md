@@ -1,5 +1,7 @@
 # CITS3200_Project
 
+[Task sheet](https://docs.google.com/document/d/170enUYwhoX5xjHld9fs92MUjpOHgRbCG6riMfFhiIG0/edit?usp=sharing)
+
 [Google Drive](https://drive.google.com/open?id=1IIcVWmXnNDJ_qXzNHUh7GD5lRdM1zqzB)
 
 ## Usage
