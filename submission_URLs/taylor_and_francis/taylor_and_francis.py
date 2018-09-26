@@ -139,8 +139,8 @@ for i in range(len(l)):
     except KeyboardInterrupt:
         sys.exit()
     except:
-        print("error")
-        i-=1
+        print("error ", sys.exc_info())
+        i-=1 # not working
 
 print(s, t, w, len(l), (s+t+w)/len(l))
 

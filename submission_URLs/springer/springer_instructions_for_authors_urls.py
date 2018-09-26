@@ -43,7 +43,7 @@ for row in l:
                                 found_url = True
                                 break
                         except:
-                            print("wagwan")
+                            print("unable to get instructions for authors link for: ", row[0])
             if found_url:
                 break
     except:
