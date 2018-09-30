@@ -109,11 +109,14 @@ venv.bak/
 # journal_publishing_frequency files
 ahci_frequencies.xlsx
 ssci_frequencies.xlsx
+ahci_frequencies_dictionary.xlsx
+ssci_frequencies_dictionary.xlsx
 ahci_analysis.py
 ssci_analysis.py
 compare.py
 journal_frequency_dictionary.py
 submission_guidelines_analysis.md
 
-# springer
+# springer files
 *springer.xlsx
+testing
