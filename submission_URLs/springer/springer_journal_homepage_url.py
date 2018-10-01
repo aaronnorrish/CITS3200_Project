@@ -2,6 +2,10 @@ import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
 
+# TODO need to remove print statements
+# enclose getting source in try/except
+# try/except for result-items?
+
 sheet = pd.read_excel("springer_no_duplicates.xlsx", header=None)
 l = pd.Series.tolist(sheet)
 headers = l.pop(0)
@@ -50,8 +54,7 @@ for row in l:
 
 # had a timeout at scientometrics journal
 print(s, len(l))
-# print(c)
 
 headers.append("URL")
 df = pd.DataFrame.from_records(l, columns=headers)
-df.to_excel("springer_journal_homepage_urls_test.xlsx", index=False)
+df.to_excel("springer_journal_homepage_urls.xlsx", index=False)
