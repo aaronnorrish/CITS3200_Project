@@ -141,27 +141,25 @@ if __name__ == '__main__':
     springer_home_url = "https://springer.com"
     springer_link_home_url = "https://link.springer.com"
 
-
-    s,f = 0,0
+    h,i,f = 0,0,0
     for row in l:
         journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
         if journal_homepage_relative_path is None:
             print("unable to get from springer:", row[0], row[2])
             journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
-        if journal_homepage_relative_path is None:
+        if journal_homepage_relative_path is not None:
+            h+=1
+            instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path)
+            if instructions_for_authors_URL is not None:
+                i+=1
+                row.append(instructions_for_authors_URL)
+            else:
+                row.append(springer_home_url + journal_homepage_relative_path)
+        else:
             f += 1
             print("unable to get:", row[0], row[2])
-        else:
-            s += 1
-            row.append(springer_home_url + journal_homepage_relative_path)
-        # if journal_homepage_relative_path is not None:
-        #     instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path)
-        #     if instructions_for_authors_URL is not None:
-        #         row.append(instructions_for_authors_URL)
-        #     else:
-        #         row.append(springer_home_url + journal_homepage_relative_path)
 
-    print(s, len(l) - f, len(l))
+    print(h, i, len(l) - f, len(l))
 
     headers.append("URL")
     df = pd.DataFrame.from_records(l, columns=headers)
