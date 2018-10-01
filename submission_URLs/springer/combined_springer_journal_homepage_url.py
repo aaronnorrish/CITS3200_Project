@@ -8,6 +8,7 @@ import unicodedata
 # try/except for result-items?
 # have functions for springer and springer link ?
 # add a timeout? retry
+# need a try for .find code
 
 def remove_accents(string):
     nfkd_form = unicodedata.normalize('NFKD', string)
@@ -100,7 +101,7 @@ if __name__ == '__main__':
     springer_link_home_url = "https://link.springer.com"
 
 
-    f = 0
+    s,f = 0,0
     for row in l:
         journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
         if journal_homepage_relative_path is None:
@@ -109,7 +110,9 @@ if __name__ == '__main__':
         if journal_homepage_relative_path is None:
             f += 1
             print("unable to get:", row[0], row[2])
-        row.append(springer_home_url + journal_homepage_relative_path)
+        else:
+            s += 1
+            row.append(springer_home_url + journal_homepage_relative_path)
         # if journal_homepage_relative_path is not None:
         #     instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path)
         #     if instructions_for_authors_URL is not None:
@@ -117,7 +120,7 @@ if __name__ == '__main__':
         #     else:
         #         row.append(springer_home_url + journal_homepage_relative_path)
 
-    print(len(l) - f, len(l))
+    print(s, len(l) - f, len(l))
 
     headers.append("URL")
     df = pd.DataFrame.from_records(l, columns=headers)
