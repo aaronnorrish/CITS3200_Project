@@ -1,6 +1,12 @@
 import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
+import unicodedata
+
+def remove_accents(string):
+    nfkd_form = unicodedata.normalize('NFKD', string)
+    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
 
 sheet = pd.read_excel("springer_no_duplicates.xlsx", header=None)
 l = pd.Series.tolist(sheet)
@@ -17,8 +23,8 @@ for row in l:
     soup = BeautifulSoup(source.content, 'lxml')
 
     journals = soup.findAll("li", {"class":"has-cover"})
-    if len(journals) != 1:
-        print(row[0], row[2], len(journals))
+    if len(journals) == 0:
+        print("no seach results: ", row[0], row[2])
     for journal in journals:
         # for link in :
         a_tag = journal.find("div", {"class":"text"}).find('a') # assumes each entry has text div
@@ -28,17 +34,21 @@ for row in l:
             row.append(home_url + journal_path)
             s += 1
             break
-        else:
-            journal_name = journal_name.replace("and", "&").replace(":", "-")
-            if row[0].lower().find(journal_name) != -1 or journal_name.find(row[0].lower()) != -1:
-                s += 1
+        else: # the search is done on the ISSN so could just do it anyway
+            # try:
+            # need to open up link to check this
+            # print_issn = issn_tag.find("span", {"class":"pissn"}).split(" ")[0]
+            j = remove_accents(row[0].lower().replace("the ", "").replace(",","").replace("&", "and"))
+            j = re.sub('[^A-Za-z0-9]+', '', j)
+            journal_name = remove_accents(journal_name.lower().replace("the ", "").replace("&", "and"))
+            journal_name = re.sub('[^A-Za-z0-9]+', '', journal_name)
+            if(j == journal_name or j.find(journal_name) != -1 or journal_name.find(j) != -1):
                 row.append(home_url + journal_path)
+                s+=1
                 break
-            else: # the search is done on the ISSN so could just do it anyway
-                # try:
-                # need to open up link to check this
-                print(soup.find("div", {"id":"issn"}), row[0])
-                # print_issn = issn_tag.find("span", {"class":"pissn"}).split(" ")[0]
+            else:
+                print("unable to match: ", soup.find("div", {"id":"issn"}), row[0], row[2])
+
                 # e_issn = issn_tag.find("span", {"class":"eissn"}).split(" ")[0]
                 # if print_issn == row[2]:
                 #     row.append(home_url + journal_path)
