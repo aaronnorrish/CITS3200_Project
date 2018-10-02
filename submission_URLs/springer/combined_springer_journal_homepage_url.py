@@ -149,7 +149,7 @@ if __name__ == '__main__':
             journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
         if journal_homepage_relative_path is not None:
             h+=1
-            instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path)
+            instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0])
             if instructions_for_authors_URL is not None:
                 i+=1
                 row.append(instructions_for_authors_URL)
@@ -163,4 +163,4 @@ if __name__ == '__main__':
 
     headers.append("URL")
     df = pd.DataFrame.from_records(l, columns=headers)
-    df.to_excel("combined_springer_journal_homepage_urls.xlsx", index=False)
+    df.to_excel("combined_springer_urls.xlsx", index=False)
