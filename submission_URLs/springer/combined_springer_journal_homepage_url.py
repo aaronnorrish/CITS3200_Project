@@ -9,6 +9,7 @@ import unicodedata
 # have functions for springer and springer link ?
 # add a timeout? retry
 # need a try for .find code
+# change so it look over all journalss
 
 def remove_accents(string):
     nfkd_form = unicodedata.normalize('NFKD', string)
@@ -134,7 +135,7 @@ def get_springer_link_homepage_url(journal_name, ISSN):
     return None
 
 if __name__ == '__main__':
-    sheet = pd.read_excel("springer_no_duplicates.xlsx", header=None)
+    sheet = pd.read_excel("publist_master_no_duplicates.xlsx", header=None)
     l = pd.Series.tolist(sheet)
     headers = l.pop(0)
 
@@ -143,13 +144,41 @@ if __name__ == '__main__':
 
     h,i,f = 0,0,0
     for row in l:
-        journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
+        # have to introduce n_tries
+        exception = True
+        n_tries = 0
+        while(exception and n_tries < 5):
+            try:
+                journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
+                exception = False
+            except:
+                # pass
+                n_tries += 1
+                exception = True
         if journal_homepage_relative_path is None:
             print("unable to get from springer:", row[0], row[2])
-            journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
+            exception = True
+            n_tries = 0
+            while(exception and n_tries < 5):
+                try:
+                    journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
+                    exception = False
+                except:
+                    # pass
+                    n_tries += 1
+                    exception = True
         if journal_homepage_relative_path is not None:
             h+=1
-            instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0])
+            exception = True
+            n_tries = 0
+            while(exception and n_tries < 5):
+                try:
+                    instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0])
+                    exception = False
+                except:
+                    # pass
+                    n_tries += 1
+                    exception = True
             if instructions_for_authors_URL is not None:
                 i+=1
                 row.append(instructions_for_authors_URL)
@@ -158,9 +187,11 @@ if __name__ == '__main__':
         else:
             f += 1
             print("unable to get:", row[0], row[2])
+        if (h + i + f) % 100 == 0:
+            print((h+i+f), "journals seached, there are: ", h+i, "successes")
 
     print(h, i, len(l) - f, len(l))
 
     headers.append("URL")
     df = pd.DataFrame.from_records(l, columns=headers)
-    df.to_excel("combined_springer_urls.xlsx", index=False)
+    df.to_excel("master_urls.xlsx", index=False)
