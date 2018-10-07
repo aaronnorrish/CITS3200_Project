@@ -9,7 +9,8 @@ import unicodedata
 # have functions for springer and springer link ?
 # add a timeout? retry
 # need a try for .find code
-# change so it look over all journalss
+# change so it look over all journals
+# what to do if execution is stopped at some random point? - don't want to have to re-execute whole program - maybe pass excel spreadsheet - if empty columns, run code
 
 def remove_accents(string):
     nfkd_form = unicodedata.normalize('NFKD', string)
@@ -151,7 +152,7 @@ if __name__ == '__main__':
             try:
                 journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
                 exception = False
-            except:
+            except requests.exceptions.RequestException:
                 # pass
                 n_tries += 1
                 exception = True
@@ -163,7 +164,7 @@ if __name__ == '__main__':
                 try:
                     journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
                     exception = False
-                except:
+                except requests.exceptions.RequestException:
                     # pass
                     n_tries += 1
                     exception = True
@@ -175,7 +176,7 @@ if __name__ == '__main__':
                 try:
                     instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0])
                     exception = False
-                except:
+                except requests.exceptions.RequestException:
                     # pass
                     n_tries += 1
                     exception = True
