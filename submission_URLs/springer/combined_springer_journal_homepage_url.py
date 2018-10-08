@@ -11,13 +11,14 @@ import unicodedata
 # need a try for .find code
 # change so it look over all journals
 # what to do if execution is stopped at some random point? - don't want to have to re-execute whole program - maybe pass excel spreadsheet - if empty columns, run code
+# could use n_tries as a multiple for the timeout
 
 def remove_accents(string):
     nfkd_form = unicodedata.normalize('NFKD', string)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 def get_instructions_for_authors(journal_homepage_URL, journal_name):
-    source = requests.get(journal_homepage_URL)
+    source = requests.get(journal_homepage_URL, timeout=30.0)
     soup = BeautifulSoup(source.content, 'lxml')
 
     for ul_tag in soup.find_all("ul", {"class":"listToOpenLayer"}):
@@ -68,12 +69,12 @@ def get_springer_homepage_url(journal_name, ISSN, EISSN):
     # print(search_term)
     springer_search_url = springer_search_url_start + search_term.replace(" ","+") + springer_search_url_end
     # print(search_url)
-    source = requests.get(springer_search_url)
+    source = requests.get(springer_search_url, timeout=30.0)
     soup = BeautifulSoup(source.content, 'lxml')
     for div_tag in soup.find_all("div", {"class":"result-item"}):
         if div_tag.small.text == "Journal":
             journal_homepage_relative_path = div_tag.a.get('href')
-            journal_source = requests.get(springer_home_url + journal_homepage_relative_path)
+            journal_source = requests.get(springer_home_url + journal_homepage_relative_path, timeout=30.0)
             journal_soup = BeautifulSoup(journal_source.content, 'lxml')
             try:
                 website_ISSN = journal_soup.find("span", {"wicketpath":"content_basic_productDescriptionContainer_productDescription_issnPrint_content"}).text
@@ -102,7 +103,7 @@ def get_springer_link_homepage_url(journal_name, ISSN):
     springer_link_search_url_end = "&facet-content-type=%22Journal%22"
 
     springer_link_search_url = springer_link_search_url_start + ISSN + springer_link_search_url_end
-    source = requests.get(springer_link_search_url)
+    source = requests.get(springer_link_search_url, timeout=30.0)
     soup = BeautifulSoup(source.content, 'lxml')
 
     journals = soup.findAll("li", {"class":"has-cover"})
@@ -136,7 +137,8 @@ def get_springer_link_homepage_url(journal_name, ISSN):
     return None
 
 if __name__ == '__main__':
-    sheet = pd.read_excel("publist_master_no_duplicates.xlsx", header=None)
+    # sheet = pd.read_excel("publist_master_no_duplicates.xlsx", header=None)
+    sheet = pd.read_excel("springer_no_duplicates.xlsx", header=None)
     l = pd.Series.tolist(sheet)
     headers = l.pop(0)
 
@@ -152,7 +154,7 @@ if __name__ == '__main__':
             try:
                 journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
                 exception = False
-            except requests.exceptions.RequestException:
+            except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 # pass
                 n_tries += 1
                 exception = True
@@ -164,7 +166,7 @@ if __name__ == '__main__':
                 try:
                     journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
                     exception = False
-                except requests.exceptions.RequestException:
+                except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                     # pass
                     n_tries += 1
                     exception = True
@@ -176,7 +178,7 @@ if __name__ == '__main__':
                 try:
                     instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0])
                     exception = False
-                except requests.exceptions.RequestException:
+                except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                     # pass
                     n_tries += 1
                     exception = True
@@ -195,4 +197,5 @@ if __name__ == '__main__':
 
     headers.append("URL")
     df = pd.DataFrame.from_records(l, columns=headers)
-    df.to_excel("master_urls.xlsx", index=False)
+    df.to_excel("combined_springer_urls.xlsx", index=False)
+    # df.to_excel("master_urls.xlsx", index=False)
