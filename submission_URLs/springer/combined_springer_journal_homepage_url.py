@@ -2,23 +2,23 @@ import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
 import unicodedata
+import urllib3
 
-# TODO need to remove print statements
+# TODO
+# need to remove print statements
 # enclose getting source in try/except
 # try/except for result-items?
-# have functions for springer and springer link ?
-# add a timeout? retry
-# need a try for .find code
 # change so it look over all journals
 # what to do if execution is stopped at some random point? - don't want to have to re-execute whole program - maybe pass excel spreadsheet - if empty columns, run code
-# could use n_tries as a multiple for the timeout
+# could use n_tries as a multiple for the timeout - doesn't really make sense?
+# need to return informative information if an error occurs
 
 def remove_accents(string):
     nfkd_form = unicodedata.normalize('NFKD', string)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
-def get_instructions_for_authors(journal_homepage_URL, journal_name):
-    source = requests.get(journal_homepage_URL, timeout=30.0)
+def get_instructions_for_authors(journal_homepage_URL, journal_name, time_limit):
+    source = requests.get(journal_homepage_URL, timeout=time_limit)
     soup = BeautifulSoup(source.content, 'lxml')
 
     for ul_tag in soup.find_all("ul", {"class":"listToOpenLayer"}):
@@ -50,6 +50,7 @@ def get_instructions_for_authors(journal_homepage_URL, journal_name):
                                 # break
                         except AttributeError:
                             print("unable to get instructions for authors link for: ", journal_name)
+                            continue
             except AttributeError:
                 # executing for EPJ Data Science -> "http://www.epjdatascience.com/authors/instructions", European Transport Research Review
                 # need to investigate how the HTML is structured
@@ -58,7 +59,7 @@ def get_instructions_for_authors(journal_homepage_URL, journal_name):
                 continue
     return None
 
-def get_springer_homepage_url(journal_name, ISSN, EISSN):
+def get_springer_homepage_url(journal_name, ISSN, EISSN, time_limit):
     springer_home_url = "https://springer.com"
     springer_search_url_start = "https://www.springer.com/gp/search?query="
     springer_search_url_end = "&submit=Submit"
@@ -69,71 +70,76 @@ def get_springer_homepage_url(journal_name, ISSN, EISSN):
     # print(search_term)
     springer_search_url = springer_search_url_start + search_term.replace(" ","+") + springer_search_url_end
     # print(search_url)
-    source = requests.get(springer_search_url, timeout=30.0)
+    source = requests.get(springer_search_url, timeout=time_limit)
     soup = BeautifulSoup(source.content, 'lxml')
     for div_tag in soup.find_all("div", {"class":"result-item"}):
-        if div_tag.small.text == "Journal":
-            journal_homepage_relative_path = div_tag.a.get('href')
-            journal_source = requests.get(springer_home_url + journal_homepage_relative_path, timeout=30.0)
-            journal_soup = BeautifulSoup(journal_source.content, 'lxml')
-            try:
-                website_ISSN = journal_soup.find("span", {"wicketpath":"content_basic_productDescriptionContainer_productDescription_issnPrint_content"}).text
-                if(website_ISSN == ISSN):
-                    return journal_homepage_relative_path
-                    # print(journal_name)
-                    # row.append(journal_homepage_relative_path)
-                    # s+=1
-                    # break
-            except AttributeError:
+        try:
+            if div_tag.small.text == "Journal":
+                journal_homepage_relative_path = div_tag.a.get('href')
+                journal_source = requests.get(springer_home_url + journal_homepage_relative_path, timeout=time_limit)
+                journal_soup = BeautifulSoup(journal_source.content, 'lxml')
                 try:
-                    website_EISSN = journal_soup.find("span", {"wicketpath":"content_basic_productDescriptionContainer_productDescription_issnElectronic_content"}).text
-                    if(website_EISSN == ISSN):
+                    website_ISSN = journal_soup.find("span", {"wicketpath":"content_basic_productDescriptionContainer_productDescription_issnPrint_content"}).text
+                    if(website_ISSN == ISSN):
                         return journal_homepage_relative_path
                         # print(journal_name)
                         # row.append(journal_homepage_relative_path)
                         # s+=1
                         # break
                 except AttributeError:
-                    continue
-                    # print("ERROR: unable to get ISSN for ", journal_name)
+                    try:
+                        website_EISSN = journal_soup.find("span", {"wicketpath":"content_basic_productDescriptionContainer_productDescription_issnElectronic_content"}).text
+                        if(website_EISSN == ISSN):
+                            return journal_homepage_relative_path
+                            # print(journal_name)
+                            # row.append(journal_homepage_relative_path)
+                            # s+=1
+                            # break
+                    except AttributeError:
+                        continue
+                        # print("ERROR: unable to get ISSN for ", journal_name)
+        except AttributeError:
+            continue
     return None
 
-def get_springer_link_homepage_url(journal_name, ISSN):
+def get_springer_link_homepage_url(journal_name, ISSN, time_limit):
     springer_link_search_url_start = "https://link.springer.com/search?query="
     springer_link_search_url_end = "&facet-content-type=%22Journal%22"
 
     springer_link_search_url = springer_link_search_url_start + ISSN + springer_link_search_url_end
-    source = requests.get(springer_link_search_url, timeout=30.0)
+    source = requests.get(springer_link_search_url, timeout=time_limit)
     soup = BeautifulSoup(source.content, 'lxml')
 
     journals = soup.findAll("li", {"class":"has-cover"})
     if len(journals) == 0:
         print("no seach results: ", journal_name, ISSN)
     for journal in journals:
-        # for link in :
-        a_tag = journal.find("div", {"class":"text"}).find('a') # assumes each entry has text div
-        journal_homepage_relative_path = a_tag.get('href')
-        website_journal_name = a_tag.text.replace(",", "").lower()
-        if journal_name.lower().find(website_journal_name) != -1 or website_journal_name.find(journal_name.lower()) != -1:
-            # row.append(springer_home_url + journal_homepage_relative_path)
-            return journal_homepage_relative_path
-            # s += 1
-            # break
-        else: # the search is done on the ISSN so could just do it anyway
-            # try:
-            # need to open up link to check this
-            # print_issn = issn_tag.find("span", {"class":"pissn"}).split(" ")[0]
-            j = remove_accents(journal_name.lower().replace("the ", "").replace(",","").replace("&", "and"))
-            j = re.sub('[^A-Za-z0-9]+', '', j)
-            website_journal_name = remove_accents(website_journal_name.lower().replace("the ", "").replace("&", "and"))
-            website_journal_name = re.sub('[^A-Za-z0-9]+', '', website_journal_name)
-            if(j == website_journal_name or j.find(website_journal_name) != -1 or website_journal_name.find(j) != -1):
-                return journal_homepage_relative_path
+        try:
+            a_tag = journal.find("div", {"class":"text"}).find('a') # assumes each entry has text div
+            journal_homepage_relative_path = a_tag.get('href')
+            website_journal_name = a_tag.text.replace(",", "").lower()
+            if journal_name.lower().find(website_journal_name) != -1 or website_journal_name.find(journal_name.lower()) != -1:
                 # row.append(springer_home_url + journal_homepage_relative_path)
-                # s+=1
+                return journal_homepage_relative_path
+                # s += 1
                 # break
-            else:
-                print("unable to match: ", soup.find("div", {"id":"issn"}), journal_name, ISSN)
+            else: # the search is done on the ISSN so could just do it anyway
+                # try:
+                # need to open up link to check this
+                # print_issn = issn_tag.find("span", {"class":"pissn"}).split(" ")[0]
+                j = remove_accents(journal_name.lower().replace("the ", "").replace(",","").replace("&", "and"))
+                j = re.sub('[^A-Za-z0-9]+', '', j)
+                website_journal_name = remove_accents(website_journal_name.lower().replace("the ", "").replace("&", "and"))
+                website_journal_name = re.sub('[^A-Za-z0-9]+', '', website_journal_name)
+                if(j == website_journal_name or j.find(website_journal_name) != -1 or website_journal_name.find(j) != -1):
+                    return journal_homepage_relative_path
+                    # row.append(springer_home_url + journal_homepage_relative_path)
+                    # s+=1
+                    # break
+                else:
+                    print("unable to match: ", soup.find("div", {"id":"issn"}), journal_name, ISSN)
+        except AttributeError:
+            continue
     return None
 
 if __name__ == '__main__':
@@ -145,14 +151,15 @@ if __name__ == '__main__':
     springer_home_url = "https://springer.com"
     springer_link_home_url = "https://link.springer.com"
 
-    h,i,f = 0,0,0
+    h,i,f,e = 0,0,0,0
     for row in l:
         # have to introduce n_tries
         exception = True
         n_tries = 0
+        journal_homepage_relative_path = None
         while(exception and n_tries < 5):
             try:
-                journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3])
+                journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3], 12.0 + n_tries * 12.0)
                 exception = False
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 # pass
@@ -164,34 +171,37 @@ if __name__ == '__main__':
             n_tries = 0
             while(exception and n_tries < 5):
                 try:
-                    journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2])
+                    journal_homepage_relative_path = get_springer_link_homepage_url(row[0], row[2], 12.0 + n_tries * 12.0)
                     exception = False
                 except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                     # pass
                     n_tries += 1
                     exception = True
         if journal_homepage_relative_path is not None:
-            h+=1
+            h+=1 # count number of homepages obtained
             exception = True
             n_tries = 0
             while(exception and n_tries < 5):
                 try:
-                    instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0])
+                    instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0], 12.0 + n_tries * 12.0)
                     exception = False
                 except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                     # pass
                     n_tries += 1
                     exception = True
+            if row[1].lower().find("springer") == -1:
+                print(row[0])
             if instructions_for_authors_URL is not None:
                 i+=1
                 row.append(instructions_for_authors_URL)
             else:
+                e+=1
                 row.append(springer_home_url + journal_homepage_relative_path)
         else:
             f += 1
             print("unable to get:", row[0], row[2])
-        if (h + i + f) % 100 == 0:
-            print((h+i+f), "journals seached, there are: ", h+i, "successes")
+        if (e + i + f) % 100 == 0:
+            print((e+i+f), "journals seached, there are: ", e+i, "successes")
 
     print(h, i, len(l) - f, len(l))
 
