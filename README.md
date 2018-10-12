@@ -71,3 +71,19 @@ pip3 install --user xlrd
 ```
 pip3 install --user openpyxl
 ```
+* pprint
+```
+pip3 install --user pprint
+```
+* urllib3
+```
+pip3 install --user urllib3
+```
+* selenium
+```
+pip3 install --user selenium
+```
+* numpy
+```
+pip3 install --user numpy
+```
