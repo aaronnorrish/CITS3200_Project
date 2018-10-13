@@ -13,52 +13,19 @@ import urllib3
 # could use n_tries as a multiple for the timeout - doesn't really make sense?
 # need to return informative information if an error occurs
 
+# Removes diacritics from a string.
+#   @param string the string for which the diacritics are to be removed
 def remove_accents(string):
     nfkd_form = unicodedata.normalize('NFKD', string)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
-def get_instructions_for_authors(journal_homepage_URL, journal_name, time_limit):
-    source = requests.get(journal_homepage_URL, timeout=time_limit)
-    soup = BeautifulSoup(source.content, 'lxml')
-
-    for ul_tag in soup.find_all("ul", {"class":"listToOpenLayer"}):
-        for li_tag in ul_tag.find_all("li", {"class":"listItemToOpenLayer"}):
-            try:
-                title = li_tag.a.span.text.lower()
-                if title.find("instructions for authors")!=-1 or title.find("instructions to authors")!=-1 or title.find("author guidelines")!=-1 or title.find("guidelines for submitters")!=-1 or title.find("hinweise für autoren")!=-1:
-                    # then this is the correct list element
-                    # sometimes the link is to a PDF
-                    # this line may be a problem if there is more than one of these div tags or a tags
-                    try:
-                        guidelines_url = li_tag.find("div", {"class":"wideLayer portletLayer"}).find("div", {"class":"clearfix"}).a.get('href').replace("print_view=true&","")
-                        if guidelines_url is not None:
-                            return guidelines_url
-                            # row.append(guidelines_url)
-                            # s+=1
-                            # found_url = True
-                            # break
-                    except AttributeError:
-                        try:
-                            print("trying a tag for: ", journal_name)
-                            guidelines_url = li_tag.a.get('href')
-                            print(guidelines_url)
-                            if guidelines_url is not None:
-                                return guidelines_url
-                                # row.append(guidelines_url)
-                                # a+=1
-                                # found_url = True
-                                # break
-                        except AttributeError:
-                            print("unable to get instructions for authors link for: ", journal_name)
-                            continue
-            except AttributeError:
-                # executing for EPJ Data Science -> "http://www.epjdatascience.com/authors/instructions", European Transport Research Review
-                # need to investigate how the HTML is structured
-                print("no ifa tag: ", journal_name)
-                # f+=1
-                continue
-    return None
-
+# Finds the homepage URL for a journal on the Springer website. If no such page
+# exists, return None.
+#   @param journal_name the name of the journal to be searched
+#   @param ISSN the ISSN of the journal to be searched
+#   @param EISSN the EISSN of the journal to be searched
+#   @param time_limit the time limit for the URL request
+#   @returns
 def get_springer_homepage_url(journal_name, ISSN, EISSN, time_limit):
     springer_home_url = "https://springer.com"
     springer_search_url_start = "https://www.springer.com/gp/search?query="
@@ -89,7 +56,7 @@ def get_springer_homepage_url(journal_name, ISSN, EISSN, time_limit):
                 except AttributeError:
                     try:
                         website_EISSN = journal_soup.find("span", {"wicketpath":"content_basic_productDescriptionContainer_productDescription_issnElectronic_content"}).text
-                        if(website_EISSN == ISSN):
+                        if(website_EISSN == EISSN):
                             return journal_homepage_relative_path
                             # print(journal_name)
                             # row.append(journal_homepage_relative_path)
@@ -142,6 +109,48 @@ def get_springer_link_homepage_url(journal_name, ISSN, time_limit):
             continue
     return None
 
+def get_instructions_for_authors_url(journal_homepage_URL, journal_name, time_limit):
+    source = requests.get(journal_homepage_URL, timeout=time_limit)
+    soup = BeautifulSoup(source.content, 'lxml')
+
+    for ul_tag in soup.find_all("ul", {"class":"listToOpenLayer"}):
+        for li_tag in ul_tag.find_all("li", {"class":"listItemToOpenLayer"}):
+            try:
+                title = li_tag.a.span.text.lower()
+                if title.find("instructions for authors")!=-1 or title.find("instructions to authors")!=-1 or title.find("author guidelines")!=-1 or title.find("guidelines for submitters")!=-1 or title.find("hinweise für autoren")!=-1:
+                    # then this is the correct list element
+                    # sometimes the link is to a PDF
+                    # this line may be a problem if there is more than one of these div tags or a tags
+                    try:
+                        guidelines_url = li_tag.find("div", {"class":"wideLayer portletLayer"}).find("div", {"class":"clearfix"}).a.get('href').replace("print_view=true&","")
+                        if guidelines_url is not None:
+                            return guidelines_url
+                            # row.append(guidelines_url)
+                            # s+=1
+                            # found_url = True
+                            # break
+                    except AttributeError:
+                        try:
+                            print("trying a tag for: ", journal_name)
+                            guidelines_url = li_tag.a.get('href')
+                            print(guidelines_url)
+                            if guidelines_url is not None:
+                                return guidelines_url
+                                # row.append(guidelines_url)
+                                # a+=1
+                                # found_url = True
+                                # break
+                        except AttributeError:
+                            print("unable to get instructions for authors link for: ", journal_name)
+                            continue
+            except AttributeError:
+                # executing for EPJ Data Science -> "http://www.epjdatascience.com/authors/instructions", European Transport Research Review
+                # need to investigate how the HTML is structured
+                print("no ifa tag: ", journal_name)
+                # f+=1
+                continue
+    return None
+
 if __name__ == '__main__':
     # sheet = pd.read_excel("publist_master_no_duplicates.xlsx", header=None)
     sheet = pd.read_excel("springer_no_duplicates.xlsx", header=None)
@@ -183,7 +192,7 @@ if __name__ == '__main__':
             n_tries = 0
             while(exception and n_tries < 5):
                 try:
-                    instructions_for_authors_URL = get_instructions_for_authors(springer_home_url + journal_homepage_relative_path, row[0], 12.0 + n_tries * 12.0)
+                    instructions_for_authors_URL = get_instructions_for_authors_url(springer_home_url + journal_homepage_relative_path, row[0], 12.0 + n_tries * 12.0)
                     exception = False
                 except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                     # pass
