@@ -183,6 +183,7 @@ if __name__ == '__main__':
     for row in l:
         n_tries = 0
         journal_homepage_relative_path = None
+        instructions_for_authors_URL = None
         while(n_tries < 5):
             try:
                 journal_homepage_relative_path = get_springer_homepage_url(row[0], row[2], row[3], 12.0 + n_tries * 12.0)
