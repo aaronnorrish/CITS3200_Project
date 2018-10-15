@@ -60,6 +60,7 @@ def get_taylor_and_francis_homepage_url(journal, search_term, time_limit):
                     journal_name = re.sub('[^A-Za-z0-9]+', '', journal_name)
                     if(j == journal_name or j.find(journal_name) != -1 or journal_name.find(j) != -1):
                         return relative_path
+                    # we cannot match the journal names; inspect the next search result
                     else:
                         continue
     except AttributeError:
@@ -72,7 +73,7 @@ def get_taylor_and_francis_homepage_url(journal, search_term, time_limit):
 # not exist, the homepage for a journal on the Taylor and Francis website.
 #   @param relative_path the relative path to the journal's homepage
 #   @param time_limit the time limit for the URL request
-#   @return the path to the instructions for authors, or failing that,
+#   @return the path to the instructions for authors webpage, or failing that,
 #       the homepage for the journal on the Taylor and Francis
 def get_taylor_and_francis_instructions_for_authors_url(relative_path, time_limit):
     home_url = "https://www.tandfonline.com"
@@ -102,35 +103,34 @@ if __name__ == '__main__':
     l = pd.Series.tolist(sheet)
     headers = l.pop(0)
 
-    s,t,w, = 0,0,0
+    s = 0
     for i in range(len(l)):
-        t +=1
         n_tries = 0
+        journal_homepage_relative_path = None
+        journal_page = None
         while(n_tries < 5):
             try:
-                journal_homepage_relative_path = get_taylor_and_francis_homepage_url(l[i][0], l[i][2], 12.0 + n_tries * 12.0)
+                journal_homepage_relative_path = get_taylor_and_francis_homepage_url(l[i][0], l[i][2], 24.0 + n_tries * 24.0)
                 if journal_homepage_relative_path is None:
-                    journal_homepage_relative_path = get_taylor_and_francis_homepage_url(l[i][0], l[i][3], 12.0 + n_tries * 12.0) # maybe separate instead of nest -> could cause a problem
+                    journal_homepage_relative_path = get_taylor_and_francis_homepage_url(l[i][0], l[i][3], 24.0 + n_tries * 24.0) # maybe separate instead of nest -> could cause a problem
                 break
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
-                break
 
         if journal_homepage_relative_path is not None:
             n_tries = 0
             while(n_tries < 5):
                 try:
-                    journal_page = get_taylor_and_francis_instructions_for_authors_url(journal_homepage_relative_path, 12.0 + n_tries * 12.0)
+                    journal_page = get_taylor_and_francis_instructions_for_authors_url(journal_homepage_relative_path, 24.0 + n_tries * 24.0)
                     break
                 except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                     n_tries += 1
 
         if journal_page is not None:
             s+=1
-            print(s, t, s/t)
             l[i].append(journal_page)
 
-    print(s, t, w, len(l), (s+t+w)/len(l))
+    print(s, len(l), s/len(l))
 
     headers.append("Homepage URL")
     df = pd.DataFrame.from_records(l, columns=headers)
