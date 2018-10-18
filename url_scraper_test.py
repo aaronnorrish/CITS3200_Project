@@ -22,7 +22,7 @@ import datetime
 
 def open_workbook(filename):
     #Load xlsx file into Python
-    wb = xl.load_workbook('journals.xlsx') #Open Input workbook
+    wb = xl.load_workbook('test.xlsx') #Open Input workbook
     journals = wb['journal_sheet'] #Open journals worksheet
     urls = wb["url_sheet"]
     num_rows = len(tuple(journals.rows))
@@ -111,7 +111,7 @@ def connectFirefox():
 # Change the checkpoint variable to run from a different row incase the program failed halfway
 def home_page_finder():
     #Load xlsx file into Python
-    wb = xl.load_workbook('journals.xlsx') #Open Input workbook
+    wb = xl.load_workbook('test.xlsx') #Open Input workbook
     journals = wb['journal_sheet'] #Open journals worksheet
     urls = wb["url_sheet"]
     num_rows = len(tuple(journals.rows))
@@ -202,12 +202,12 @@ def home_page_finder():
                     print(error_message)
 
         check_point +=1
-    wb.save('journals.xlsx')
+    wb.save('test.xlsx')
 
 # Attempts to find submission guidelines pages by matching candidate urls to appropriate data
 def submission_page_finder():
     #Load xlsx file into Python
-    wb = xl.load_workbook('journals.xlsx') #Open Input workbook
+    wb = xl.load_workbook('test.xlsx') #Open Input workbook
     journals = wb['journal_sheet'] #Open journals worksheet
     urls = wb["url_sheet"]
     num_rows = len(tuple(journals.rows))
@@ -279,7 +279,7 @@ def submission_page_finder():
     except:
         driver = connectChrome()
     date = str(datetime.datetime.now()).replace(' ','')[0:18].replace(':','')
-    wb.save('journals.xlsx')
+    wb.save('test.xlsx')
                         
                     
 #comment/uncomment below functions to run appropriate functions
