@@ -154,11 +154,3 @@ def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
     # otherwise, we were unable to get anything for this journal, return None
     else:
         return (None, None)
-
-    # # if we have managed to get the journal homepage or instructions for authors,
-    # # then return this URL
-    # if instructions_for_authors is not None:
-    #     return instructions_for_authors
-    #
-    # # otherwise return None
-    # return None
