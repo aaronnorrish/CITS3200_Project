@@ -50,11 +50,10 @@ def scrape_frequencies(url, time_limit):
         if journals_HTML[0] == "":
             journals_HTML.pop(0)
 
-        # if the total number of journals does not equal the number of journal
-        # names or if the number of journal names do not equal the number of
-        # journals obtained from the HTML then something has gone wrong with
-        # parsing the HTML
-        if total_journals != len(journal_names) or len(journal_names) != len(journals_HTML):
+        # if we have parsed more webpages then there are journals or if the number
+        # of journal names do not equal the number of journals obtained from the
+        # HTML then something has gone wrong with parsing the HTML
+        if 500 * (page-1) > total_journals or len(journal_names) != len(journals_HTML):
             print("ERROR: UNABLE TO PARSE HTML")
             return None
 
