@@ -181,18 +181,18 @@ def get_instructions_for_authors_url(journal_homepage_URL, journal_name, time_li
 #   @return the URL to the instructions for authors webpage, failing that the
 #       journal homepage, otherwise None
 def springer(journal_name, ISSN, EISSN, timeout_increment):
-    # need to work out to do with "nan" for either
-    # could split function -> might be fine as used for comparison
+    # if the ISSN and EISSN are nan, then we are unable to match journals, return None
     if ISSN == "nan" and EISSN == "nan":
         return None
 
     springer_home_url = "https://springer.com"
     springer_link_home_url = "https://link.springer.com"
 
-    n_tries = 0
     journal_homepage_relative_path = None
     instructions_for_authors_URL = None
 
+    # try to get the journal's homepage from the Springer website
+    n_tries = 0
     while(n_tries < 5):
         try:
             journal_homepage_relative_path = get_springer_homepage_url(journal_name, ISSN, EISSN, timeout_increment + n_tries * timeout_increment)
@@ -200,6 +200,8 @@ def springer(journal_name, ISSN, EISSN, timeout_increment):
         except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
             n_tries += 1
 
+    # if we were unable to get the journal homepage from Springer, try the Springer
+    # Link website
     if journal_homepage_relative_path is None and ISSN != "nan":
         n_tries = 0
         while(n_tries < 5):
@@ -209,6 +211,8 @@ def springer(journal_name, ISSN, EISSN, timeout_increment):
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
 
+    # if we were able to get the journal's homepage, then try to get its
+    # instructions for authors page
     if journal_homepage_relative_path is not None:
         n_tries = 0
         while(n_tries < 5):
@@ -217,9 +221,13 @@ def springer(journal_name, ISSN, EISSN, timeout_increment):
                 break
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
+        # if we were able to get the instructions for authors, return it
         if instructions_for_authors_URL is not None:
             return instructions_for_authors_URL
+        # otherwise, return the journal homepage
         else:
             return springer_home_url + journal_homepage_relative_path
+
+    # otherwise, we were unable to get anything for this journal, return None
     else:
         return None

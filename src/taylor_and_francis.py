@@ -1,7 +1,6 @@
 import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
-import sys
 import unicodedata
 import urllib3
 
@@ -110,12 +109,14 @@ def get_taylor_and_francis_instructions_for_authors_url(relative_path, time_limi
 #   @return the URL to the instructions for authors webpage, failing that the
 #       journal homepage, otherwise None
 def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
+    # if the ISSN and EISSN are nan, then we are unable to match journals, return None
     if ISSN == "nan" and EISSN == "nan":
         return None
 
     journal_homepage_relative_path = None
     journal_page = None
 
+    # try to get the journal's homepage using the ISSN
     if ISSN != "nan":
         n_tries = 0
         while(n_tries < 5):
@@ -125,6 +126,7 @@ def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
 
+    # try to get the journal's homepage using the EISSN
     if journal_homepage_relative_path is None and EISSN != "nan":
         n_tries = 0
         while(n_tries < 5):
@@ -134,6 +136,8 @@ def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
 
+    # if we have managed to get the journal's homepage, then try to get its
+    # instructions for authors page
     if journal_homepage_relative_path is not None:
         n_tries = 0
         while(n_tries < 5):
@@ -143,7 +147,10 @@ def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
 
+    # if we have managed to get the journal homepage or instructions for authors,
+    # then return this URL
     if journal_page is not None:
         return journal_page
 
+    # otherwise return None
     return None
