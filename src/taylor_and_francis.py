@@ -91,30 +91,33 @@ def get_taylor_and_francis_instructions_for_authors_url(relative_path, time_limi
         # if the instructions for authors page exists return the URL for this page
         if instructions_soup.head.title.text != "Error":
             return instructions_url
-        # otherwise return the URL for the journal homepage
+        # otherwise return None
         else:
-            return home_url + relative_path
+            return None
+    # otherwise return None
     except AttributeError:
-        return home_url + relative_path
+        return None
 
-# Acts as the main function. Finds the instructions for authors URL for a journal
-# listed on the Taylor and Francis website. If it is unable to find the instructions
-# for authors URL it will return the journal's homepage, or None if the journal's
-# homepage could not be found.
+# Acts as the main function. Finds the instructions for authors and homepage URL
+# for a journal listed on the Taylor and Francis website and returns them as a tuple.
+# If it is unable to find the instructions for authors URL it will return the tuple
+# (journal_homepage, None) or (None, None) if the journal's homepage could not be found.
 #   @param journal_name the name of the journal to be found
 #   @param ISSN the ISSN of the journal
 #   @param EISSN the EISSN of the journal
 #   @param timeout_increment how much the timeout should be incremented for each
 #       get request
-#   @return the URL to the instructions for authors webpage, failing that the
-#       journal homepage, otherwise None
+#   @return the tuple (journal_homepage, instructions_for_authors_URL) where
+#       either member may be None if the corresponding webpage was unable to be
+#       found
 def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
     # if the ISSN and EISSN are nan, then we are unable to match journals, return None
     if ISSN == "nan" and EISSN == "nan":
-        return None
+        return (None, None)
 
+    home_url = "https://www.tandfonline.com"
     journal_homepage_relative_path = None
-    journal_page = None
+    instructions_for_authors = None
 
     # try to get the journal's homepage using the ISSN
     if ISSN != "nan":
@@ -142,15 +145,20 @@ def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
         n_tries = 0
         while(n_tries < 5):
             try:
-                journal_page = get_taylor_and_francis_instructions_for_authors_url(journal_homepage_relative_path, timeout_increment + n_tries * timeout_increment)
+                instructions_for_authors = get_taylor_and_francis_instructions_for_authors_url(journal_homepage_relative_path, timeout_increment + n_tries * timeout_increment)
                 break
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
+        return (home_url + journal_homepage_relative_path, instructions_for_authors)
 
-    # if we have managed to get the journal homepage or instructions for authors,
-    # then return this URL
-    if journal_page is not None:
-        return journal_page
+    # otherwise, we were unable to get anything for this journal, return None
+    else:
+        return (None, None)
 
-    # otherwise return None
-    return None
+    # # if we have managed to get the journal homepage or instructions for authors,
+    # # then return this URL
+    # if instructions_for_authors is not None:
+    #     return instructions_for_authors
+    #
+    # # otherwise return None
+    # return None
