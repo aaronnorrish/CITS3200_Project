@@ -170,26 +170,27 @@ def get_instructions_for_authors_url(journal_homepage_URL, journal_name, time_li
     return None
 
 # Acts as the main function. Finds the instructions for authors URL for a journal
-# listed on the Springer website. If it is unable to find the instructions for
-# authors URL it will return the journal's homepage, or None if the journal's
-# homepage could not be found.
+# listed on the Springer website and returns them as a tuple.If it is unable to
+# find the instructions for authors URL it will return the tuple (journal_homepage, None)
+# or (None, None) if the journal's homepage could not be found.
 #   @param journal_name the name of the journal to be found
 #   @param ISSN the ISSN of the journal
 #   @param EISSN the EISSN of the journal
 #   @param timeout_increment how much the timeout should be incremented for each
 #       get request
-#   @return the URL to the instructions for authors webpage, failing that the
-#       journal homepage, otherwise None
+#   @return the tuple (journal_homepage, instructions_for_authors_URL) where
+#       either member may be None if the corresponding webpage was unable to be
+#       found
 def springer(journal_name, ISSN, EISSN, timeout_increment):
     # if the ISSN and EISSN are nan, then we are unable to match journals, return None
     if ISSN == "nan" and EISSN == "nan":
-        return None
+        return (None,None)
 
     springer_home_url = "https://springer.com"
     springer_link_home_url = "https://link.springer.com"
 
     journal_homepage_relative_path = None
-    instructions_for_authors_URL = None
+    instructions_for_authors = None
 
     # try to get the journal's homepage from the Springer website
     n_tries = 0
@@ -217,17 +218,12 @@ def springer(journal_name, ISSN, EISSN, timeout_increment):
         n_tries = 0
         while(n_tries < 5):
             try:
-                instructions_for_authors_URL = get_instructions_for_authors_url(springer_home_url + journal_homepage_relative_path, journal_name, timeout_increment + n_tries * timeout_increment)
+                instructions_for_authors = get_instructions_for_authors_url(springer_home_url + journal_homepage_relative_path, journal_name, timeout_increment + n_tries * timeout_increment)
                 break
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
-        # if we were able to get the instructions for authors, return it
-        if instructions_for_authors_URL is not None:
-            return instructions_for_authors_URL
-        # otherwise, return the journal homepage
-        else:
-            return springer_home_url + journal_homepage_relative_path
+        return (springer_home_url + journal_homepage_relative_path, instructions_for_authors)
 
     # otherwise, we were unable to get anything for this journal, return None
     else:
-        return None
+        return (None, None)
