@@ -1,13 +1,5 @@
 import pandas as pd
 
-def determine_fresh_sheet(master_file):
-    master_df = pd.read_excel(master_file, header=None)
-    master_list = pd.Series.tolist(master_df)
-    headers = master_list.pop(0)
-    if headers[len(headers)-1] == "URL":
-        return False
-    return True
-
 # Calculates the remaining number of journals whose instructions for authors
 # webpage have not yet been obtained.
 #   @param spreadsheet_list a spreadsheet represented as a list
