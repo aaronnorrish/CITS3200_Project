@@ -1,6 +1,11 @@
 # CITS3200_Project
 
 ## Installation Guide
+To download this program, you may simply click the green "Clone or download" button on the repository homepage and either download the repo as a ZIP file or clone it using the GitHub Desktop app. Alternatively, if you have git installed on your computer, you may clone from the command line:
+```
+$ git clone https://github.com/aaronnorrish/CITS3200_Project.git
+```
+
 This program requires Python3 and the following Python modules:
   * sys
   * os.path
@@ -47,9 +52,4 @@ pip3 install --user openpyxl
 * [urllib3](https://urllib3.readthedocs.io/en/latest/)
 ```
 pip3 install --user urllib3
-```
-
-To download this program, you may simply click the green "Clone or download" button on the repository homepage and either download the repo as a ZIP file or clone it using the GitHub Desktop app. Alternatively, if you have git installed on your computer, you may clone from the command line:
-```
-$ git clone https://github.com/aaronnorrish/CITS3200_Project.git
 ```
