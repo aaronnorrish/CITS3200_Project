@@ -6,44 +6,45 @@ This program requires Python3 and the following Python modules:
   * os.path
   * re
   * unicodedata
-  * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
-  * [lxml](https://lxml.de/installation.html)
-  * [requests](http://docs.python-requests.org/en/master/user/install/)
-  * [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
-  * [xlrd](https://xlrd.readthedocs.io/en/latest/installation.html)
-  * [openpyxl](https://openpyxl.readthedocs.io/en/stable/)
-  * [urllib3](https://urllib3.readthedocs.io/en/latest/)
+  * BeautifulSoup
+  * lxml
+  * requests
+  * pandas
+  * xlrd
+  * openpyxl
+  * urllib3
 
-[Here is a link to install Python3](https://www.python.org/downloads/). The sys, os.path, re and unicodedata modules belong to the Python Standard Library (and so do not require installation if Python is already installed), however the other modules will require installing. [See this link for more information on how to install Python packages.](https://packaging.python.org/tutorials/installing-packages/#ensure-you-can-run-python-from-the-command-line)
+[Here is a link to install Python3](https://www.python.org/downloads/).
 
-A link to the installation guide for each of these other packages has been provided, however, on MacOS with pip3 installed, these packages may simply be installed by entering the following into the command line:
+The sys, os.path, re and unicodedata modules belong to the Python Standard Library (and so do not require installation if Python is already installed), however the other modules will require installing. [See this link for more information on how to install Python packages.](https://packaging.python.org/tutorials/installing-packages/#ensure-you-can-run-python-from-the-command-line)
 
-* BeautifulSoup
+A link to the installation guide for each of these other packages have been provided below, however, on MacOS with pip3 installed, these packages may simply be installed by entering the following into the command line:
+
+* [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 ```
 pip3 install --user beautifulsoup4
 ```
-* lxml
+* [lxml](https://lxml.de/installation.html)
 ```
 pip3 install --user lxml
 ```
-* requests
+* [requests](http://docs.python-requests.org/en/master/user/install/)
 ```
 pip3 install --user requests
 ```
-* pandas
+* [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
 ```
 pip3 install --user --upgrade pandas
 ```
-* xlrd
+* [xlrd](https://xlrd.readthedocs.io/en/latest/installation.html)
 ```
 pip3 install --user xlrd
 ```
-* openpyxl
+  * [openpyxl](https://openpyxl.readthedocs.io/en/stable/)
 ```
 pip3 install --user openpyxl
 ```
-
-* urllib3
+* [urllib3](https://urllib3.readthedocs.io/en/latest/)
 ```
 pip3 install --user urllib3
 ```
