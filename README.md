@@ -1,52 +1,23 @@
 # CITS3200_Project
 
-[Task sheet](https://docs.google.com/document/d/170enUYwhoX5xjHld9fs92MUjpOHgRbCG6riMfFhiIG0/edit?usp=sharing)
-
-[Google Drive](https://drive.google.com/open?id=1IIcVWmXnNDJ_qXzNHUh7GD5lRdM1zqzB)
-
-## Usage
-### journal_frequency.py
-This program can be run from the command line in one of two ways:
-#### Option 1 - No Command Line Arguments
-```
-python3 journal_frequency.py
-```
-
-This method requires that the SSCI and A&HCI master list Excel files are stored in the current directory and are named `publist_ssci.xlsx` and `publist_ahci.xlsx` respectively. You do not have to worry about this if you just simply clone the repo and run the program from the command line; these files will have the correct names and will be in the correct directory.
-#### Option 2 - With Command Line Arguments
-```
-python3 journal_frequency.py <ssci_url> <read_ssci_journals.xlsx> <write_ssci_journals.xlsx> <ahci_url> <read_ahci_journals.xlsx> <write_ahci_journals.xlsx>
-```
-
-This method requires the user to pass the URL to the first webpage of the [SSCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=SS&mode=print&Page=1) and [A&HCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=H&mode=print&Page=1), as well as the paths to the Excel (.xlsx) files:   
-  * containing the SSCI and A&HCI Master Lists (two separate files)
-    * the Excel master list files must contain a header with the following (or similarly titled) fields:
-        * Journal Title
-        * Publisher
-        * ISSN
-        * E-ISSN
-        * Country
-        * Language
-
-      in that order
-  * which the user would like the updated data to be written to (also two separate files)
-
-as command line arguments.
-
-#### Requirements
+## Installation Guide
 This program requires Python3 and the following Python modules:
   * sys
+  * os.path
   * re
-  * BeautifulSoup
-  * lxml
-  * requests
-  * pandas
-  * xlrd
-  * openpyxl
+  * unicodedata
+  * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+  * [lxml](https://lxml.de/installation.html)
+  * [requests](http://docs.python-requests.org/en/master/user/install/)
+  * [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
+  * [xlrd](https://xlrd.readthedocs.io/en/latest/installation.html)
+  * [openpyxl](https://openpyxl.readthedocs.io/en/stable/)
+  * [urllib3](https://urllib3.readthedocs.io/en/latest/)
 
-The sys and re modules belong to the Python Standard Library, however the other modules will require installing. [See this link for more information on how to install Python packages.](https://packaging.python.org/tutorials/installing-packages/#ensure-you-can-run-python-from-the-command-line)
+[Here is a link to install Python3](https://www.python.org/downloads/). The sys, os.path, re and unicodedata modules belong to the Python Standard Library (and so do not require installation if Python is already installed), however the other modules will require installing. [See this link for more information on how to install Python packages.](https://packaging.python.org/tutorials/installing-packages/#ensure-you-can-run-python-from-the-command-line)
 
-On Apple computers with pip3 installed, these other packages may simply be installed by entering the following into the command line:
+A link to the installation guide for each of these other packages has been provided, however, on MacOS with pip3 installed, these packages may simply be installed by entering the following into the command line:
+
 * BeautifulSoup
 ```
 pip3 install --user beautifulsoup4
@@ -71,19 +42,13 @@ pip3 install --user xlrd
 ```
 pip3 install --user openpyxl
 ```
-* pprint
-```
-pip3 install --user pprint
-```
+
 * urllib3
 ```
 pip3 install --user urllib3
 ```
-* selenium
+
+To download this program, you may simply click the green "Clone or download" button on the repository homepage and either download the repo as a ZIP file or clone it using the GitHub Desktop app. Alternatively, if you have git installed on your computer, you may clone from the command line:
 ```
-pip3 install --user selenium
-```
-* numpy
-```
-pip3 install --user numpy
+$ git clone https://github.com/aaronnorrish/CITS3200_Project.git
 ```
