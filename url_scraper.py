@@ -154,7 +154,7 @@ def home_page_finder():
         #Save every 100 iterations and swap drivers
         if ((n_searches % 100) == 0):
             date = str(datetime.datetime.now()).replace(' ','')[0:18].replace(':','')
-            wb.save('./logs/homepage/output_'+date+'checkpoint_'+str(check_point)+'.xlsx') #Save every 100 iterations
+            wb.save('./logs/output_'+date+'checkpoint_'+str(check_point)+'.xlsx') #Save every 100 iterations
             #Swap and Init new Driver
             if switch == 0:
                 try:
