@@ -12,15 +12,35 @@ scrape researchgate websites with out being blocked.
 1. Install Python
 2. Install Pip
 3. Install The Following packages:
-  openpyxl
-  pprint
-  urllib3
-  BeautifulSoup
-  requests
-  numpy
-  time
-  selenium
-  datetime
+  #openpyxl
+  ``` 
+  pip install openpyxl
+  '''
+  #pprint
+  '''
+  pip install pprint
+  '''
+  #urllib3
+  '''
+  pip install urllib3
+  '''
+  #BeautifulSoup
+  '''
+  pip install bs4
+  '''
+  #requests
+  '''
+  pip install requests
+  '''
+  #numpy
+  '''
+  pip install numpy
+  '''
+  #selenium
+  '''
+  pip install selenium
+  '''
+  
 4. Install Chromedriver and place .exe in same location that url_scraper.py is running from
 5. Install Gecko driver and place .exe in same location that url_scraper.py is running from
 6. Run program
