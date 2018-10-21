@@ -7,7 +7,7 @@ from sys import argv
 
 # TODO if no internet connection program will fail as it will append the URL column
 # KeyboardInterrupt in Springer and Taylor and Francis
-# stop it from overwriting journals
+# remove print statements
 
 # Main program which first tries to obtain the journal publishing frequencies as
 # listed on the Clarivate website, then obtains the instructions for authors and
