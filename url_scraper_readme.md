@@ -9,9 +9,9 @@ scrape researchgate websites with out being blocked.
 
 #Installation
 
-1. Install Python
-2. Install Pip
-3. Install The Following packages:
+1. Install [Python3](https://www.python.org/downloads/). Python is installed by default on OSX systems. 
+2. Install [pip](https://pypi.org/project/pip/)
+3. Install fhe following packages:
   * openpyxl
   ```
   pip install openpyxl
@@ -41,6 +41,9 @@ scrape researchgate websites with out being blocked.
   pip install selenium
   ```
   
-4. Install Chromedriver and place .exe in same location that url_scraper.py is running from
-5. Install Gecko driver and place .exe in same location that url_scraper.py is running from
-6. Run program
+4. Install [Chromedriver](http://chromedriver.chromium.org/downloads) and place .exe in same location that url_scraper.py is running from
+5. Install [Geckodriver](https://github.com/mozilla/geckodriver/releases) and place .exe in same location that url_scraper.py is running from
+6. Open the command prompt and run the program with the following command:
+```
+python3 url_scraper.py
+```
