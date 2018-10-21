@@ -84,6 +84,7 @@ python3 scrape_journals.py <start_position> <end_position>
 ```
 
 
+
 Where `end_position` is the index of the last journal the program should try to obtain the URLs for.
 
 
@@ -95,6 +96,8 @@ This is the master file which runs the program. It requires that the A&HCI and S
   * E-ISSN
   * Country
   * Language
+
+
 in that order. In some cases, the conversion process adds empty columns in between these columns of the Excel file. Any such columns need to be removed.
 
 This program first tries to obtain the journal publishing frequencies as listed on the Clarivate website and writes them to `ahci_frequencies.xlsx` and `ssci_frequencies.xlsx` respectively before merging them into `master_URLs_frequencies.xlsx` should the frequencies been retrieved. The URLs to the first webpage of the [SSCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=SS&mode=print&Page=1) and [A&HCI Master List](http://mjl.clarivate.com/cgi-bin/jrnlst/jlresults.cgi?PC=H&mode=print&Page=1) are hard coded into this program as they are unreachable by a webcrawler. These URLs were obtained by clicking on the "Format for print A-Z" button on the Master Journal List website for each master list and selecting the link to the first 500 journals. Should the URLs provided be changed at any point, navigate to each of these pages and replace the URLs given as arguments to the get_journal_frequencies function on lines 41 and 42.
