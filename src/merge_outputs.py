@@ -32,17 +32,17 @@ if __name__ == '__main__':
                 # if it is a Springer or Taylor and Francis journal only use the
                 # URLs from spreadsheet_list2 if it is not listed in spreadsheet_list
                 if row[3].lower().find("springer") != -1 or row[3].lower().find("taylor & francis") != -1 or row[3][1].lower().find("taylor and francis") != -1:
-                    if journal[ifa_col] == "nan" and row[7] != "nan":
+                    if str(journal[ifa_col]) == "nan" and str(row[7]) != "nan":
                         journal[ifa_col] = row[7]
-                    if journal[homepage_col] == "nan" and row[8] != "nan":
+                    if str(journal[homepage_col]) == "nan" and str(row[8]) != "nan":
                         journal[homepage_col] = row[8]
                         break
                 # otherwise if the URL exists in spreadsheet_list2, add it to
                 # spreadsheet_list
                 else:
-                    if row[7] != "nan":
+                    if str(row[7]) != "nan":
                         journal[ifa_col] = row[7]
-                    if row[8] != "nan":
+                    if str(row[8]) != "nan":
                         journal[homepage_col] = row[8]
                         break
 
