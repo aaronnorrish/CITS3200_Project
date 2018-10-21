@@ -149,7 +149,7 @@ def taylor_and_francis(journal_name, ISSN, EISSN, timeout_increment):
                 break
             except(requests.exceptions.RequestException, urllib3.exceptions.HTTPError, urllib3.exceptions.ConnectTimeoutError, urllib3.exceptions.RequestError, urllib3.exceptions.TimeoutError):
                 n_tries += 1
-        return (home_url + journal_homepage_relative_path, instructions_for_authors)
+        return (instructions_for_authors, home_url + journal_homepage_relative_path)
 
     # otherwise, we were unable to get anything for this journal, return None
     else:
