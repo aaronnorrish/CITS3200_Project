@@ -84,9 +84,15 @@ python3 scrape_journals.py <start_position> <end_position>
 ```
 
 
+Where `end_position` is the index of the last journal the program should try to obtain the URLs for. The position of the last journal in the spreadsheet is the row number, as shown in the Excel file, minus 2.
 
-Where `end_position` is the index of the last journal the program should try to obtain the URLs for.
+After scrape_journals.py has finished executing, if the `journals.xlsx` file exists (the output file from the url_scraper.py program), these two outputs can be merged into a single file called `journal_URLs.xlsx` by running merge_outputs.py from the command line:
 
+```
+python3 merge_outputs.py
+```
+
+Below is a short description of each of the files which are a part of this program. Each of these files have been thoroughly documented, so for more information, please refer to the files themselves.
 
 ### scrape_journals.py
 This is the master file which runs the program. It requires that the A&HCI and SSCI master lists Excel files are stored in the src directory and are named `publist_ahci.xlsx` and `publist_ssci.xlsx` respectively. By default, these files are stored in src, however, should new lists be released, these will require updating. The A&HCI and SSCI files are typically given in PDF and so require being converted into .xlsx format. There are many websites that perform this task for free such as [this one](https://smallpdf.com/pdf-to-excel). The converted Excel files must contain a header with the following or similarly titled fields:
@@ -107,3 +113,18 @@ Due to the inherent risks involved in parsing HTML (such as the possibility of t
 Because of the large amount of time it takes for this program to execute over the total list of journals, a functionality has been built-in to allow the user to terminate execution (by pressing Control-C) once the program has started to search for journal URLs (the program will notify the user printing "Begin scraping journal URLs" to the command line). In such a case, the program will write the data it has found so far into an Excel file before terminating. Note that each time execution is resumed by re-running the program, the program will first try to obtain the journal frequencies if they have not already been. In addition to this, there is the option to pass command line arguments denoting the start and end positions of the journals in the spreadsheet for which the user would like the program to execute over. This allows the program to be run in chunks for convenience. By default, the program executes over the whole spreadsheet.
 
 To counter any possible occurrences such as the Internet connection being dropped, or the Taylor and Francis or Springer websites being briefly unresponsive, the program will execute over the spreadsheet at least twice. On each resulting iteration, the program will try to obtain the URLs for journals that were not obtained in the previous iteration. Once the number of such journals has not changed, the program will terminate.
+
+### journal_frequency.py
+This file contains the code which tries to obtain the journal publishing frequencies as listed on the Clarivate website. get_journal_frequencies acts as the main function callable from other files. To deal with any errors in trying to connect with the Clarivate website (e.g. Internet connection drops out, the connection to the server becomes unresponsive, etc.) the program will attempt to make requests of the server at most 5 times. If the journal frequencies were able to be obtained, they will be written to the provided Excel file.
+
+### taylor_and_francis.py
+This code attempts to obtain the homepage and instructions for authors URLs for journals listed on the Taylor and Francis website. taylor_and_francis acts as the main function. It should be noted that if both the ISSN and EISSN passed to this program does not exist, then the program will be unable to obtain a URL for this journal. As long as one of these parameters exist, the program can search for the provided journal on the Taylor and Francis website. Like journal_frequency.py, the program will try to connect to the Taylor and Francis website at most 5 times before terminating.
+
+### springer.py
+This program attempts to retrieve the homepage URLs first for journals listed on the Springer website, or failing that the SpringerLink website, before using this URL to find the instructions for authors page. The main function is called springer. Like taylor_and_francis.py either the ISSN and EISSN passed to it must exist for the program to actually search for a journal. Like journal_frequency.py and taylor_and_francis.py it will issue at most 5 requests to the server it is trying to connect with.
+
+### helper_functions.py
+This file contains helper functions that are used in scrape_journals.py. Such functions merge the SSCI and A&HCI master lists (whether or not journal frequencies were able to be obtained) and calculate the remaining number of journals whose URLs have not yet been obtained.
+
+### merge_outputs.py
+This program merges the outputs produced from the scrape_journals.py and url_scraper.py programs. The output file from scrape_journals.py must be called `master_URLs_frequencies.xlsx` or `master_URLs.xlsx` and the file produced by url_scraper.py must be called `journals.xlsx`. The file containing the merged results of these two programs will be called `journal_URLs.xlsx`.
