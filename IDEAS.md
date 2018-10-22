@@ -1,0 +1,11 @@
+# Ideas to Expand on this Project
+
+Ideally, to obtain the URLs of the homepage and instructions for authors of all journals listed in the SSCI and A&HCI lists, one would create a generalised webscraper which uses a search engine such as Google and crawls the websites of the search results to find the desired webpages. This was the initial idea conceived by the group to tackle this project. However, we found many difficulties in implementing such a webscraper, such as:
+  * the fickle nature of Google searches meant that the top search results returned would change depending on which machine was being used to perform the search and the location of the machine
+  * the raw processing required to crawl even just one website
+  * being blocked by websites for issuing too many requests in a short amount of time
+  * the difficulty of determining which URLs within the website are the ones we actually want
+
+To actually obtain the submission requirements (the word count, referencing style, etc) another group may be able to use the links we have provided and extract this information using a Machine Learning technique such as Natural Language Processing or similar. As we found, this is a huge task in itself and is even more complicated then it sounds; to run Natural Language Processing, the raw text from the instructions for authors pages would first need to be extracted. This is difficult due to the fact that different journals provide the instructions for authors in different formats - in most cases they are HTML, PDF or .docx documents - therefore, any such webscraper must also be able to parse each of these different formats - this is not straightforward.
+
+An alternative idea, proposed by Handong, is to convert the provided spreadsheet to an updatable database that could be shared with other Social Science and Arts & Humanities scholars around the world. This would rely on Open Source principles, with researchers updating the submission requirement information for journals manually. Of course, this is heavily dependent on the scholars who would use this resource to update the database, however this is probably superior to any software solution, as a human is able to extract such specialised information from text better than any software can at the moment.   
