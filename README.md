@@ -1,10 +1,11 @@
 # CITS3200_Project
 
 ## Installation Guide
-To download this program, you may simply click the green "Clone or download" button on the repository homepage and either download the repo as a ZIP file or clone it using the GitHub Desktop app. Alternatively, if you have git installed on your computer, you may clone from the command line:
+To download this program, you may simply click the green "Clone or download" button on the repository homepage and either download the [repo](https://github.com/aaronnorrish/CITS3200_Project) as a ZIP file or clone it using the GitHub Desktop app. Alternatively, if you have git installed on your computer, you may clone from the command line:
 ```
 $ git clone https://github.com/aaronnorrish/CITS3200_Project.git
 ```
+
 
 This program requires Python3 and the following Python modules:
   * sys
@@ -55,7 +56,7 @@ pip3 install --user urllib3
 ```
 
 ## User Guide
-This program consists of six Python files which are stored in the src folder. The master file is scrape_journals.py which can be run from the command line in one of two ways:
+This program consists of six Python files which are stored in the src/Springer and Taylor and Francis folder. The master file is scrape_journals.py which can be run from the command line in one of two ways:
 
 #### Option 1 - No Command Line Arguments
 
@@ -92,15 +93,27 @@ After scrape_journals.py has finished executing, if the `journals.xlsx` file exi
 python3 merge_outputs.py
 ```
 
-This program has been written in a modular fashion, being broken up into six separate files, each of which performs a distinct task. It has been written in this manner to allow the user to easily identify any errors that may result from the modification of website URLs or HTML which is quite possible. Should changes be made to the Clarivate website, then the code in journal_frequency.py will be effected, for changes to the Taylor and Francis website, taylor_and_francis.py will be effected, and for Springer, springer.py will be effected. Below is a short description of each of the files which are a part of this program. Each of these files have been thoroughly documented, so for more information, please refer to the files themselves.
+This program has been written in a modular fashion, being broken up into six separate files, each of which performs a distinct task. It has been written in this manner to allow the user to easily identify any errors that may result from the modification of website URLs or HTML which is quite possible. Should changes be made to the Clarivate website, then the code in journal_frequency.py will be effected, for changes to the Taylor and Francis website, taylor_and_francis.py will be effected, and for Springer, springer.py will be effected.
+
+Below is a short description of each of the files which are a part of this program. Each of these files have been thoroughly documented, so for more information, please refer to the files themselves.
 
 ### scrape_journals.py
 This is the master file which runs the program. It requires that the A&HCI and SSCI master lists Excel files are stored in the src directory and are named `publist_ahci.xlsx` and `publist_ssci.xlsx` respectively. By default, these files are stored in src, however, should new lists be released, these will require updating. The A&HCI and SSCI files are typically given in PDF and so require being converted into .xlsx format. There are many websites that perform this task for free such as [this one](https://smallpdf.com/pdf-to-excel). The converted Excel files must contain a header with the following or similarly titled fields:
   * Journal Title
+
+
   * Publisher
+
+
   * ISSN
+
+
   * E-ISSN
+
+
   * Country
+
+
   * Language
 
 
@@ -127,4 +140,4 @@ This program attempts to retrieve the homepage URLs first for journals listed on
 This file contains helper functions that are used in scrape_journals.py. Such functions merge the SSCI and A&HCI master lists (whether or not journal frequencies were able to be obtained) and calculate the remaining number of journals whose URLs have not yet been obtained.
 
 ### merge_outputs.py
-This program merges the outputs produced from the scrape_journals.py and url_scraper.py programs. The output file from scrape_journals.py must be called `master_URLs_frequencies.xlsx` or `master_URLs.xlsx` and the file produced by url_scraper.py must be called `journals.xlsx`. The file containing the merged results of these two programs will be called `journal_URLs.xlsx`.
+This program merges the outputs produced from the scrape_journals.py and url_scraper.py programs. The output file from scrape_journals.py must be called `master_URLs_frequencies.xlsx` or `master_URLs.xlsx` and the file produced by url_scraper.py must be called `journals.xlsx` and be located in the `src/ResearchGate` directory. The file containing the merged results of these two programs will be called `journal_URLs.xlsx`.
