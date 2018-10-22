@@ -5,10 +5,6 @@ from helper_functions import *
 from os.path import isfile
 from sys import argv
 
-# TODO if no internet connection program will fail as it will append the URL column
-# KeyboardInterrupt in Springer and Taylor and Francis
-# remove print statements
-
 # Main program which first tries to obtain the journal publishing frequencies as
 # listed on the Clarivate website, then obtains the instructions for authors and
 # homepages for journals published by Springer and Taylor and Francis. If journal
@@ -52,7 +48,7 @@ if __name__ == '__main__':
     # otherwise, if no Excel file containing just journal URLs (no frequencies)
     # exists, create a new spreadsheet
     elif not isfile("master_URLs.xlsx"):
-        merge_without_frequencies("publist_ahci.xlsx", "publist_ssci.xlsx", "publist_master.xlsx")
+        merge_without_frequencies("publist_ahci.xlsx", "publist_ssci.xlsx", "master_URLs.xlsx")
 
     # read the spreadsheet
     if frequencies:
@@ -111,14 +107,12 @@ if __name__ == '__main__':
                     # if both the instructions for authors and journal homepage have
                     # been retrieved, continue to the next journal
                     if len(spreadsheet_list[i]) == row_length and str(spreadsheet_list[i][ifa_col]) != "nan" and str(spreadsheet_list[i][homepage_col]) != "nan":
-                        # print(spreadsheet_list[i][0], spreadsheet_list[i][1])
                         continue
 
                     URL = (None, None)
 
                     # try to get the URL from the Taylor and Francis website
                     URL = taylor_and_francis(spreadsheet_list[i][0], str(spreadsheet_list[i][2]), str(spreadsheet_list[i][3]), 18.0)
-                    print(URL)
                     if URL[0] is not None or URL[1] is not None:
                         obtained_journal = True
                         b_t+=1
@@ -136,14 +130,11 @@ if __name__ == '__main__':
                         else:
                             spreadsheet_list[i].append(URL[0])
                             spreadsheet_list[i].append(URL[1])
-                    # else:
-                    #     print(spreadsheet_list[i][0], spreadsheet_list[i][1])
 
                     # if no journal was able to be obtained from the Taylor and
                     # Francis website, try to get the URL from the Springer website
                     if URL[0] is None and URL[1] is None:
                         URL = springer(spreadsheet_list[i][0], str(spreadsheet_list[i][2]), str(spreadsheet_list[i][3]), 18.0)
-                        print(URL)
                         if URL[0] is not None or URL[1] is not None:
                             obtained_journal = True
                             b_s+=1
@@ -162,19 +153,15 @@ if __name__ == '__main__':
                                 spreadsheet_list[i].append(URL[0])
                                 spreadsheet_list[i].append(URL[1])
 
-                        # else:
-                        #     print(spreadsheet_list[i][0], spreadsheet_list[i][1])
-
                 previous_remaining = remaining
                 remaining = calculate_remaining(spreadsheet_list, frequencies)
-                print(previous_remaining, remaining)
 
         except KeyboardInterrupt:
             interrupt = True
             print("\nInterrupt received, writing to file...")
 
         if not interrupt:
-            print("Finished scraping journals URLs, writing to file...")
+            print("Finished scraping journal URLs, writing to file...")
 
         # if at least one journal was able to be obtained, and the starting spreadsheet
         # was new, append the Instructions for Authors and Journal Homepage columns
