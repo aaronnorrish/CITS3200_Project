@@ -20,7 +20,7 @@ if __name__ == '__main__':
     headers = spreadsheet_list.pop(0)
 
     # open the file produced by url_scraper.py
-    spreadsheet2 = pd.read_excel("journals.xlsx", header=None)
+    spreadsheet2 = pd.read_excel("../ResearchGate/journals.xlsx", header=None)
     spreadsheet_list2 = pd.Series.tolist(spreadsheet2)
     spreadsheet_list2.pop(0)
 
