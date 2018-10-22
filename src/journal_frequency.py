@@ -21,13 +21,6 @@ def scrape_frequencies(url, time_limit):
     source = requests.get(url, timeout=time_limit)
     soup = BeautifulSoup(source.content, 'lxml')
 
-    # # if this page does not exist return None TODO
-    # try:
-    #     if soup.head.text.lower() == "404 not found" or soup.head.text.lower() == "not found":
-    #         return None
-    # except AttributeError:
-    #     pass
-
     total_journals = int(''.join(filter(str.isdigit, soup.p.text)))
 
     frequencies, ISSNs, journals = [], [], []
